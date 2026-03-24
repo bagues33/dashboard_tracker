@@ -1,0 +1,20 @@
+node_modules
+vendor
+public/build
+public/storage
+storage/*.key
+.git
+.env
+.env.backup
+.phpunit.result.cache
+docker-compose.yml
+docker-compose.override.yml
+Dockerfile
+.dockerignore
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+auth.json
+<<<<<<< HEAD
+=======
+>>>>>>> 2e714ee4-2865-4f2f-a50d-97e9e28c7f35

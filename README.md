@@ -21,6 +21,38 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+## Docker Setup
+
+To simplify the setup on a server or local environment, you can use Docker.
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Quick Start
+
+1.  **Clone the repository.**
+2.  **Run the setup script:**
+    ```bash
+    ./docker-setup.sh
+    ```
+    This script will:
+    - Create a `.env` file if it doesn't exist.
+    - Build and start the Docker containers.
+    - Generate the application key.
+    - Run database migrations.
+    - Link the storage directory.
+
+### Manual Commands
+
+If you prefer to run commands manually:
+
+- **Build and start:** `docker-compose up -d --build`
+- **Stop:** `docker-compose down`
+- **Run Artisan commands:** `docker-compose exec app php artisan <command>`
+- **Access the app:** `http://localhost:8080`
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.

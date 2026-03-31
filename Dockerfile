@@ -1,5 +1,5 @@
 # --- Stage 1: PHP Dependencies ---
-FROM php:8.3-fpm-alpine as vendor
+FROM php:8.4-fpm-alpine as vendor
 
 WORKDIR /var/www/html
 
@@ -43,10 +43,13 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build
+ # Make PHP vendor files available to the frontend stage so SSR build
+ # can resolve imports like "../../vendor/tightenco/ziggy".
+ COPY --from=vendor /var/www/html/vendor ./vendor
+ RUN npm run build
 
 # --- Stage 3: Final Production Image ---
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 WORKDIR /var/www/html
 
@@ -58,6 +61,8 @@ RUN apk add --no-cache \
     postgresql-client \
     icu-libs
 
+# Install Composer in final image so we can run `composer install` at container runtime
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Install PHP extensions for runtime
 RUN apk add --no-cache --virtual .build-deps \
     libzip-dev \

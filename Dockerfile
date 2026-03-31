@@ -63,7 +63,9 @@ RUN apk add --no-cache \
 
 # Install Composer in final image so we can run `composer install` at container runtime
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-# Install PHP extensions for runtime
+# Install runtime packages (nginx + gettext for envsubst) and PHP extensions for runtime
+RUN apk add --no-cache nginx gettext \
+    && mkdir -p /run/nginx
 RUN apk add --no-cache --virtual .build-deps \
     libzip-dev \
     libpng-dev \
@@ -87,10 +89,16 @@ COPY --from=vendor /var/www/html/vendor ./vendor
 # Copy build assets from frontend stage
 COPY --from=frontend /var/www/html/public/build ./public/build
 
+# Copy nginx template and entrypoint
+COPY docker/nginx/default.template.conf /etc/nginx/conf.d/default.template.conf
+COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Setup permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Expose port
-EXPOSE 9000
+# Expose HTTP port
+EXPOSE 80
 
-CMD ["php-fpm"]
+# Use entrypoint to start php-fpm (daemon) and nginx
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

@@ -89,8 +89,8 @@ COPY --from=vendor /var/www/html/vendor ./vendor
 # Copy build assets from frontend stage
 COPY --from=frontend /var/www/html/public/build ./public/build
 
-# Copy nginx template and entrypoint
-COPY docker/nginx/default.template.conf /etc/nginx/conf.d/default.template.conf
+# Copy nginx config and entrypoint
+COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
 COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 

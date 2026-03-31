@@ -1,13 +1,21 @@
 #!/bin/sh
 set -e
 
+echo "Waiting for database..."
+sleep 5
+
+echo "Running migrations..."
+php artisan migrate --force
+
+# Optional (recommended Laravel)
+php artisan config:cache
+php artisan route:cache
+
 # Ensure log dirs
 mkdir -p /var/log/nginx
 
-# Start php-fpm as a daemon (so nginx can run in foreground)
 echo "Starting php-fpm..."
 php-fpm -D
 
-# Start nginx in foreground
 echo "Starting nginx..."
-nginx -g 'daemon off;'
+exec nginx -g 'daemon off;'

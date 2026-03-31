@@ -7,6 +7,9 @@ sleep 5
 echo "Running migrations..."
 php artisan migrate --force
 
+echo "Seeding database..."
+php artisan db:seed --force
+
 # Optional (recommended Laravel)
 php artisan config:cache
 php artisan route:cache

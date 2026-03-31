@@ -16,12 +16,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Default Admin User
-        User::create([
-            'username' => 'admin',
-            'email' => 'admin@admin.com',
-            'password' => bcrypt('password'),
-            'role' => 'admin'
-        ]);
+        User::updateOrCreate(
+            ['username' => 'admin'],
+            [
+                'email' => 'admin@admin.com',
+                'password' => bcrypt('password'),
+                'role' => 'admin',
+            ]
+        );
 
         // Default Permissions
         $permissions = [
@@ -39,7 +41,15 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            \App\Models\Permission::create($permission);
+            \App\Models\Permission::updateOrCreate(
+                [
+                    'role' => $permission['role'],
+                    'permission_key' => $permission['permission_key'],
+                ],
+                [
+                    'is_enabled' => $permission['is_enabled'],
+                ]
+            );
         }
     }
 }

@@ -90,7 +90,10 @@ COPY --from=vendor /var/www/html/vendor ./vendor
 COPY --from=frontend /var/www/html/public/build ./public/build
 
 # Copy nginx template and entrypoint
-COPY docker/nginx/default.template.conf /etc/nginx/conf.d/default.template.conf
+# place template in a non-included directory so nginx doesn't try to parse it directly
+# the entrypoint will render this template into /etc/nginx/http.d/default.conf
+RUN mkdir -p /etc/nginx/templates
+COPY docker/nginx/default.template.conf /etc/nginx/templates/default.template.conf
 COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 

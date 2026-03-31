@@ -1,10 +1,18 @@
 #!/bin/sh
 set -e
 
-# Generate nginx config from template
-if [ -f /etc/nginx/conf.d/default.template.conf ]; then
-  echo "Generating nginx config from template"
-  /usr/bin/envsubst '\$PORT \$FPM_HOST' < /etc/nginx/conf.d/default.template.conf > /etc/nginx/conf.d/default.conf
+# Generate nginx config from template (Alpine reads /etc/nginx/http.d/)
+# ensure default values for env vars used by the template
+: ${PORT:=80}
+: ${FPM_HOST:=127.0.0.1}
+export PORT
+export FPM_HOST
+
+TEMPLATE_PATH=/etc/nginx/templates/default.template.conf
+if [ -f "$TEMPLATE_PATH" ]; then
+  echo "Generating nginx config from template (PORT=$PORT, FPM_HOST=$FPM_HOST)"
+  mkdir -p /etc/nginx/http.d
+  /usr/bin/envsubst '\$PORT \$FPM_HOST' < "$TEMPLATE_PATH" > /etc/nginx/http.d/default.conf
 fi
 
 # Ensure log dirs

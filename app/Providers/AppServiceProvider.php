@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use App\Models\SmtpSetting;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -43,6 +44,10 @@ class AppServiceProvider extends ServiceProvider
                     Config::set('mail.default', 'smtp');
                 }
             }
+        }
+
+        if (env('APP_ENV') === 'production') {
+            URL::forceScheme('https');
         }
     }
 }

@@ -53,13 +53,14 @@ FROM php:8.4-fpm-alpine
 
 WORKDIR /var/www/html
 
-# Install system dependencies for runtime
+# Install system dependencies for runtime (including Nginx)
 RUN apk add --no-cache \
     libzip \
     libpng \
     libjpeg-turbo \
     postgresql-client \
-    icu-libs
+    icu-libs \
+    nginx
 
 # Install Composer in final image so we can run `composer install` at container runtime
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -87,10 +88,20 @@ COPY --from=vendor /var/www/html/vendor ./vendor
 # Copy build assets from frontend stage
 COPY --from=frontend /var/www/html/public/build ./public/build
 
+# Configure PHP-FPM to listen on localhost:9001 (Nginx will proxy to it)
+RUN sed -i 's|listen = 9000|listen = 127.0.0.1:9001|' /usr/local/etc/php-fpm.d/zz-docker.conf
+
+# Copy Nginx configuration
+COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
+
+# Copy and prepare the entrypoint script
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Setup permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Expose port
+# Expose port (Nginx listens here; Railway routes traffic to this port)
 EXPOSE 9000
 
-CMD ["php-fpm"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

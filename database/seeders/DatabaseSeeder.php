@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Default Admin User
-        User::updateOrCreate([
+        User::firstOrCreate([
             'username' => 'admin',
             'email' => 'admin@admin.com',
             'password' => bcrypt('password'),

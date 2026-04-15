@@ -4,7 +4,7 @@ FROM php:8.4-fpm-alpine as vendor
 WORKDIR /var/www/html
 
 # Install system dependencies
-RUN apk add --no-cache \
+RUN apk add --no-cache --upgrade \
     git \
     unzip \
     libzip-dev \
@@ -54,7 +54,7 @@ FROM php:8.4-fpm-alpine
 WORKDIR /var/www/html
 
 # Install system dependencies for runtime
-RUN apk add --no-cache \
+RUN apk add --no-cache --upgrade \
     libzip \
     libpng \
     libjpeg-turbo \
@@ -64,9 +64,9 @@ RUN apk add --no-cache \
 # Install Composer in final image so we can run `composer install` at container runtime
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Install runtime packages (nginx + gettext for envsubst) and PHP extensions for runtime
-RUN apk add --no-cache nginx gettext \
+RUN apk add --no-cache --upgrade nginx gettext \
     && mkdir -p /run/nginx
-RUN apk add --no-cache --virtual .build-deps \
+RUN apk add --no-cache --upgrade --virtual .build-deps \
     libzip-dev \
     libpng-dev \
     libjpeg-turbo-dev \
